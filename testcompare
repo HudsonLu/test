@@ -1,0 +1,42 @@
+import pandas as pd
+from openpyxl import Workbook
+from openpyxl.styles import PatternFill
+
+# Read the Excel files
+df1 = pd.read_excel('table1.xlsx')
+df2 = pd.read_excel('table2.xlsx')
+
+# Ensure the tables are aligned properly (same number of rows and columns)
+# This example assumes both tables have the same structure
+assert df1.shape == df2.shape, "The tables have different shapes!"
+
+# Columns to compare
+columns_to_compare = ['column1', 'column2']  # Replace with your column names
+
+# Compare the columns
+diff_mask = (df1[columns_to_compare] != df2[columns_to_compare]).any(axis=1)
+
+# Create a new DataFrame with only the rows that have differences
+diff_df = df1[diff_mask]
+
+# Create an Excel writer object and a new Excel workbook
+with pd.ExcelWriter('highlighted_differences.xlsx', engine='openpyxl') as writer:
+    # Write the original df1 to the workbook
+    df1.to_excel(writer, sheet_name='Original Data', index=False)
+    
+    # Write the rows with differences to a new sheet
+    diff_df.to_excel(writer, sheet_name='Differences', index=False)
+    
+    # Get the workbook and the sheet for differences
+    workbook = writer.book
+    worksheet = workbook['Differences']
+    
+    # Define a fill color for highlighting
+    fill = PatternFill(start_color="FFFF00", end_color="FFFF00", fill_type="solid")
+    
+    # Iterate over the rows and columns in the differences sheet
+    for row in worksheet.iter_rows(min_row=2, max_row=len(diff_df) + 1, min_col=1, max_col=len(diff_df.columns)):
+        for cell in row:
+            cell.fill = fill  # Apply the fill color to each cell
+
+print("Comparison complete. Check the 'highlighted_differences.xlsx' file.")
