@@ -1,0 +1,40 @@
+import win32com.client
+
+def add_vba_module(excel_file, vba_code):
+    # Create an instance of Excel
+    excel = win32com.client.Dispatch("Excel.Application")
+    
+    # Make Excel visible (optional)
+    excel.Visible = True
+    
+    # Open the Excel workbook
+    workbook = excel.Workbooks.Open(excel_file)
+    
+    # Get the VBProject
+    vb_project = workbook.VBProject
+    
+    # Add a new module
+    vb_module = vb_project.VBComponents.Add(1)  # 1 refers to a standard module
+    
+    # Insert VBA code into the module
+    vb_module.CodeModule.AddFromString(vba_code)
+    
+    # Save and close the workbook
+    workbook.Close(SaveChanges=True)
+    
+    # Quit Excel
+    excel.Quit()
+
+if __name__ == "__main__":
+    # Path to the Excel file
+    excel_file = r"path_to_your_excel_file\example.xlsm"
+    
+    # VBA code to be added
+    vba_code = """
+    Sub MyNewMacro()
+        MsgBox "Hello from the new VBA code!"
+    End Sub
+    """
+    
+    # Add VBA module and insert code
+    add_vba_module(excel_file, vba_code)
