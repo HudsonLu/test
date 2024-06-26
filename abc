@@ -1,5 +1,24 @@
 import win32com.client
 
+def convert_to_xlsm(excel_file, new_excel_file):
+    # Create an instance of Excel
+    excel = win32com.client.Dispatch("Excel.Application")
+    
+    # Make Excel visible (optional)
+    excel.Visible = True
+    
+    # Open the Excel workbook
+    workbook = excel.Workbooks.Open(excel_file)
+    
+    # Save the workbook as a macro-enabled workbook (.xlsm)
+    workbook.SaveAs(new_excel_file, FileFormat=52)  # 52 is the file format code for .xlsm
+    
+    # Close the workbook
+    workbook.Close(SaveChanges=True)
+    
+    # Quit Excel
+    excel.Quit()
+
 def add_vba_module(excel_file, vba_code):
     # Create an instance of Excel
     excel = win32com.client.Dispatch("Excel.Application")
@@ -26,8 +45,11 @@ def add_vba_module(excel_file, vba_code):
     excel.Quit()
 
 if __name__ == "__main__":
-    # Path to the Excel file
-    excel_file = r"path_to_your_excel_file\example.xlsm"
+    # Path to the original Excel file (.xlsx)
+    excel_file_xlsx = r"C:\Users\YourUsername\Documents\example.xlsx"
+    
+    # Path to the new Excel file (.xlsm)
+    excel_file_xlsm = r"C:\Users\YourUsername\Documents\example.xlsm"
     
     # VBA code to be added
     vba_code = """
@@ -36,5 +58,8 @@ if __name__ == "__main__":
     End Sub
     """
     
+    # Convert the .xlsx file to .xlsm
+    convert_to_xlsm(excel_file_xlsx, excel_file_xlsm)
+    
     # Add VBA module and insert code
-    add_vba_module(excel_file, vba_code)
+    add_vba_module(excel_file_xlsm, vba_code)
